@@ -57,6 +57,9 @@ pipeline {
 
                         git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/RAM12837/register-app-gitops.git
 
+                        echo "Remote URL:"
+                        git remote -v
+
                         git push origin main
                     """
                 }
