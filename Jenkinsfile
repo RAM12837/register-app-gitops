@@ -48,7 +48,7 @@ pipeline {
                 withCredentials([gitUsernamePassword(credentialsId: 'GitHub', gitToolName: 'Default')]) {
                   sh """
                     git add deployment.yaml
-                    git commit -m "Updated the deployment.yaml with new image tag ${IMAGE_TAG}"
+                    git commit -m "Updated image tag to ${IMAGE_TAG}" || true                    
                     git push origin main
                   """
                 }
