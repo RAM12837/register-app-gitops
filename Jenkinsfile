@@ -1,7 +1,16 @@
 pipeline {
     agent { label "Jenkins-Agent" }
+
+    parameters {
+        string(
+            name: 'IMAGE_TAG',
+            defaultValue: 'latest',
+            description: 'Docker Image Tag'
+        )
+    }
+
     environment {
-              APP_NAME = "register-app-pipeline"
+        APP_NAME = "register-app-pipeline"
     }
 
     stages {
@@ -12,17 +21,20 @@ pipeline {
         }
 
         stage("Checkout from SCM") {
-               steps {
-                   git branch: 'main', credentialsId: 'GitHub', url: 'https://github.com/RAM12837/register-app-gitops'
-               }
+            steps {
+                git branch: 'main', 
+                credentialsId: 'GitHub', 
+                url: 'https://github.com/RAM12837/register-app-gitops'
+            }
         }
 
         stage("Update the Deployment Tags") {
             steps {
                 sh """
-                   cat deployment.yaml
-                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
-                   cat deployment.yaml
+                    echo "received image tag is ${IMAGE_TAG}"
+                    cat deployment.yaml
+                    sed -i "s|image: remson001/register-app-pipeline:.*|image: remson001/register-app-pipeline:${IMAGE_TAG}|g" deployment.yaml                    echo "update deployment.yaml with new image tag ${IMAGE_TAG}"
+                    cat deployment.yaml
                 """
             }
         }
@@ -32,11 +44,13 @@ pipeline {
                 sh """
                    git config --global user.name "RAM12837"
                    git config --global user.email "ramkumardamde1432@gmail.com"
-                   git add deployment.yaml
-                   git commit -m "Updated Deployment Manifest"
                 """
                 withCredentials([gitUsernamePassword(credentialsId: 'GitHub', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/RAM12837/register-app-gitops main"
+                  sh """
+                    git add deployment.yaml
+                    git commit -m "Updated the deployment.yaml with new image tag ${IMAGE_TAG}"
+                    git push origin main
+                  """
                 }
             }
         }
