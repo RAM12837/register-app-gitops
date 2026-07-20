@@ -33,7 +33,8 @@ pipeline {
                 sh """
                     echo "received image tag is ${IMAGE_TAG}"
                     cat deployment.yaml
-                    sed -i "s|image: remson001/register-app-pipeline:.*|image: remson001/register-app-pipeline:${IMAGE_TAG}|g" deployment.yaml                    echo "update deployment.yaml with new image tag ${IMAGE_TAG}"
+                    sed -i "s|image: remson001/register-app-pipeline:.*|image: remson001/register-app-pipeline:${IMAGE_TAG}|g" deployment.yaml
+                    echo "updated deployment.yaml with new image tag ${IMAGE_TAG}"
                     cat deployment.yaml
                 """
             }
@@ -42,15 +43,16 @@ pipeline {
         stage("Push the changed deployment file to Git") {
             steps {
                 sh """
-                   git config --global user.name "RAM12837"
-                   git config --global user.email "ramkumardamde1432@gmail.com"
+                git config --global user.name "RAM12837"
+                git config --global user.email "ramkumardamde1432@gmail.com"
                 """
+
                 withCredentials([gitUsernamePassword(credentialsId: 'GitHub', gitToolName: 'Default')]) {
-                  sh """
-                    git add deployment.yaml
-                    git commit -m "Updated image tag to ${IMAGE_TAG}" || true                    
-                    git push origin main
-                  """
+                    sh """
+                        git add deployment.yaml
+                        git commit -m "Updated image tag to ${IMAGE_TAG}" || true
+                        git push origin main
+                    """
                 }
             }
         }
