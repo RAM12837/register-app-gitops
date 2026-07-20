@@ -51,7 +51,7 @@ pipeline {
                     sh """
                         git add deployment.yaml
                         git commit -m "Updated image tag to ${IMAGE_TAG}" || true
-                        git push origin main
+                        git push https://github.com/RAM12837/register-app-gitops main
                     """
                 }
             }
