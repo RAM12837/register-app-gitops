@@ -45,19 +45,21 @@ pipeline {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'GitHub',
-                        usernameVariable: 'GITHUB_USERNAME',
-                        passwordVariable: 'GITHUB_PAT'
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'TOKEN'
                     )
                 ]) {
 
                     sh '''
+                        echo "USERNAME=$USERNAME"
+
                         git config --global user.name "RAM12837"
                         git config --global user.email "ramkumardamde1432@gmail.com"
 
                         git add deployment.yaml
                         git commit -m "Updated image tag" || true
 
-                        git remote set-url origin https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/RAM12837/register-app-gitops.git
+                        git remote set-url origin https://${USERNAME}:${TOKEN}@github.com/RAM12837/register-app-gitops.git
 
                         echo "Remote URL:"
                         git remote -v
