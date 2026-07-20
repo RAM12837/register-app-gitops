@@ -42,20 +42,25 @@ pipeline {
 
         stage("Push the changed deployment file to Git") {
             steps {
-                sh """
-                git config --global user.name "RAM12837"
-                git config --global user.email "ramkumardamde1432@gmail.com"
-                """
+                withCredentials([usernamePassword(
+                    credentialsId: 'GitHub',
+                    usernameVariable: 'GITHUB_USER',
+                    passwordVariable: 'GITHUB_TOKEN'
+                )]) {
 
-                withCredentials([gitUsernamePassword(credentialsId: 'GitHub', gitToolName: 'Default')]) {
                     sh """
-                    git add deployment.yaml
-                    git commit -m "Updated image tag to ${IMAGE_TAG}" || true
-                    git push origin main
+                        git config --global user.name "RAM12837"
+                        git config --global user.email "ramkumardamde1432@gmail.com"
+
+                        git add deployment.yaml
+                        git commit -m "Updated image tag to ${IMAGE_TAG}" || true
+
+                        git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/RAM12837/register-app-gitops.git
+
+                        git push origin main
                     """
                 }
             }
         }
-      
     }
 }
